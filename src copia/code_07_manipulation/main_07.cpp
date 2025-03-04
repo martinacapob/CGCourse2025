@@ -269,7 +269,7 @@ int main(void)
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(1, 1, 1, 1);
+		glClearColor(1, 0, 0, 1);
 		check_gl_errors(__LINE__, __FILE__);
 
 	//	trackball_matrix = glm::rotate(glm::mat4(1.f), glm::radians(float(clock()) / 10.f), glm::vec3(0, 1, 0));
