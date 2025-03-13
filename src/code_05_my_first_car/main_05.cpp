@@ -1,3 +1,5 @@
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <string>
@@ -28,6 +30,13 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+		/* Set OpenGL context hints */
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(w, h, "code_05_my_first_car", NULL, NULL);
     if (!window)
@@ -35,7 +44,10 @@ int main(void)
         glfwTerminate();
         return -1;
     }
-    
+	
+	
+	
+
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 

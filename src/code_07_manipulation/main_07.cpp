@@ -1,3 +1,5 @@
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <string>
@@ -67,7 +69,7 @@ bool ray_sphere_intersection(glm::vec3& int_point, glm::vec3 o, glm::vec3 d, glm
 *   la versione corrente di viewport_to_ray cra il raggio passante per il pixel pX,pY
 *   e per farlo utilizza i dati di left (-1), right (1), bottom (-0.8),  top (0.8) e near
 *   specificati dalla funzione glm::frustum
-*   Ne segue che se cambiamo la proiezione questa funzione non calcola piú il raggio giusto.
+*   Ne segue che se cambiamo la proiezione questa funzione non calcola piï¿½ il raggio giusto.
 *   Provate a fare la versione che prende la matrice di proiezione e la viewport come parametri:
 *  	void viewport_to_ray(glm::mat4 proj, glm::vec4 viewport, double pX, double pY, glm::vec4  &orig, glm::vec4 &  dir) {
 */
@@ -186,6 +188,14 @@ int main(void)
 	/* Initialize the library */
 	if (!glfwInit())
 		return -1;
+
+
+		/* Set OpenGL context hints */
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	
 
 	/* Create a windowed mode window and its OpenGL context */
 	window = glfwCreateWindow(1000, 800, "code_07_manipulation", NULL, NULL);

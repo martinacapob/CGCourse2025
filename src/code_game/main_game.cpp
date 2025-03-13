@@ -1,3 +1,5 @@
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 #define NANOSVG_IMPLEMENTATION	// Expands implementation
 #include "3dparty/nanosvg/src/nanosvg.h"
 #define NANOSVGRAST_IMPLEMENTATION
@@ -94,6 +96,15 @@ void key_callback(GLFWwindow * window, int key, int scancode, int action, int mo
 		/* Initialize the library */
 		if (!glfwInit())
 			return -1;
+
+/* Set OpenGL context hints */
+glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+
+
 
 		glfwWindowHint(GLFW_SAMPLES, 4);
 

@@ -1,4 +1,4 @@
-#version 460
+#version 410
 in vec2 aPosition;
 in vec3 aColor;
 out vec3 vColor;
