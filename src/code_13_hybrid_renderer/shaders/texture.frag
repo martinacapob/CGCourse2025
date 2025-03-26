@@ -1,9 +1,10 @@
-#version 460 core  
-out vec4 color; 
-in vec2 vTexCoord; 
+#version 410 core
+
+in vec2 vTexCoord;
+out vec4 color;
+
 uniform sampler2D uColorImage;
 
-void main(void) 
-{ 
-	color = texture2D(uColorImage,vTexCoord);
-} 
+void main() {
+    color = texture(uColorImage, vTexCoord);
+}

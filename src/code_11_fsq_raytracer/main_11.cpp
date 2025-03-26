@@ -1,106 +1,105 @@
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <ctime>
 #include "../common/debugging.h"
 #include "../common/shaders.h"
 
 int main(int argc, char** argv) {
-
-	GLFWwindow* window;
+    GLFWwindow* window;
 
     /* Initialize the library */
     if (!glfwInit())
         return -1;
 
-    /* Create a windowed mode window and its OpenGL context */
+    // Imposta contesto OpenGL 4.1 core (necessario su macOS)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    // Crea finestra
     window = glfwCreateWindow(512, 512, "code_11_fsq_raytracer", NULL, NULL);
-
-
-    if (!window)
-    {
+    if (!window) {
         glfwTerminate();
         return -1;
     }
 
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window); 
+    glfwMakeContextCurrent(window);
 
-    /* Initialize the gle wrangler*/
-    glewInit();
+    // Inizializza GLEW
+    if (glewInit() != GLEW_OK) {
+        std::cerr << "Errore durante l'inizializzazione di GLEW\n";
+        return -1;
+    }
 
-    /* query for the hardware and software specs and print the result on the console*/
+    // Stampa info su OpenGL/GLSL
     printout_opengl_glsl_info();
 
-    ///* create render data in RAM */
-    // create quad in NDC space
+    /// --- Creazione geometria: un full-screen quad in NDC ---
     GLuint positionAttribIndex = 0;
-    float positions[] = { -1.0,-1.0,  // 1st vertex
-                           1.0,-1.0,  // 2nd vertex
-                           1.0, 1.0,  // 3nd vertex
-
-                          -1.0,-1.0,  // 1st vertex
-                           1.0, 1.0,  // 2nd vertex
-                          -1.0, 1.0   // 3nd vertex 
+    float positions[] = {
+        -1.0f, -1.0f,
+         1.0f, -1.0f,
+         1.0f,  1.0f,
+        -1.0f, -1.0f,
+         1.0f,  1.0f,
+        -1.0f,  1.0f
     };
 
-
-    ///* create  a vertex array object */
+    // Crea VAO
     GLuint va;
     glGenVertexArrays(1, &va);
     glBindVertexArray(va);
 
-    ///* create a buffer for the render data in video RAM */
+    // Crea VBO
     GLuint positionsBuffer;
-    glCreateBuffers(1, &positionsBuffer);
+    glGenBuffers(1, &positionsBuffer); // ✅ Compatibile con OpenGL 4.1
     glBindBuffer(GL_ARRAY_BUFFER, positionsBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 
-    ///* declare what data in RAM are filling the bufferin video RAM */
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12, positions, GL_STATIC_DRAW);
-
+    // Specifica formato attributo
     glEnableVertexAttribArray(positionAttribIndex);
-    ///* specify the data format */
-    glVertexAttribPointer(positionAttribIndex, 2, GL_FLOAT, false, 0, 0);
+    glVertexAttribPointer(positionAttribIndex, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-
-
-    ///* create a vertex shader */
+    /// --- Carica gli shader ---
     shader raytracer;
     raytracer.create_program("./shaders/basic.vert", "./shaders/raytracer.frag");
 
+    if (raytracer.program == 0) {
+        std::cerr << "Errore nella creazione dello shader program" << std::endl;
+        return -1;
+    }
 
-    /* cal glGetError and print out the result in a more verbose style
-    * __LINE__ and __FILE__ are precompiler directive that replace the value with the
-    * line and file of this call, so you know where the error happened
-    */
     check_gl_errors(__LINE__, __FILE__);
 
     glUseProgram(raytracer.program);
 
+    /// --- Main loop ---
     int nf = 0;
     int cstart = clock();
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         if (clock() - cstart > CLOCKS_PER_SEC) {
-            std::cout << nf << std::endl;
+            std::cout << nf << " FPS" << std::endl;
             nf = 0;
             cstart = clock();
         }
         nf++;
 
-        /* Render here */
-        glClearColor(0.0, 0.0, 0.0, 1);
+        // Clear screen
+        glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-       
-        glDrawArrays(GL_TRIANGLES, 0,6);
 
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        // Draw quad
+        glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        /* Poll for and process events */
-        glfwPollEvents();
+       glfwSwapBuffers(window);
+
+              glfwPollEvents();
     }
 
     glfwTerminate();
-
-	return 0;
+    return 0;
 }
